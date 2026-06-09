@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  */
 public class IncidentAnalyzer {
     //TODO - uncomment this field and initialize it in the constructor to store the incidents passed in.
-    //private final List<SupportTicket> incidents;
+    private final List<SupportTicket> incidents;
 
     /**
      * Store the incidents that this analyzer will examine.
@@ -37,6 +37,7 @@ public class IncidentAnalyzer {
      */
     public IncidentAnalyzer(List<SupportTicket> incidents) {
        //TODO - implement this constructor
+        this.incidents =List.copyOf(incidents);
     }
 
     /**
@@ -44,7 +45,7 @@ public class IncidentAnalyzer {
      */
     public long getClosedCount() {
         //TODO - implement this method
-        return -1;
+        return incidents.stream().filter(SupportTicket::resolved).count();
     }
 
     /**
@@ -54,7 +55,7 @@ public class IncidentAnalyzer {
      */
     public double getAverageTimeToClose() {
         //TODO - implement this method
-        return 0.0;
+        return incidents.stream().filter(SupportTicket::resolved).mapToInt(SupportTicket::minutesToResolve).average().orElse(0);
     }
 
     /**
@@ -62,7 +63,7 @@ public class IncidentAnalyzer {
      */
     public Map<String, Long> getCountByCategory() {
         //TODO - implement this method
-        return null;
+        return incidents.stream().collect(Collectors.groupingBy(SupportTicket::category, Collectors.counting()));
     }
 
     /**
@@ -70,6 +71,7 @@ public class IncidentAnalyzer {
      */
     public List<SupportTicket> getCriticalOpenIncidents() {
         //TODO - implement this method
-        return null;
-    }
+        return incidents.stream().filter(ticket -> !ticket.resolved()).
+                filter(ticket -> ticket.priority() == Priority.HIGH).toList();
+}
 }
